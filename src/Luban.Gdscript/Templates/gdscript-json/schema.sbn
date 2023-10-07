@@ -28,7 +28,7 @@ class {{name}}{{if bean.parent_def_type}} extends {{full_name bean.parent_def_ty
 {{~end~}}
 
 {{~if bean.is_abstract_type~}}
-    static func fromJson(_json_):
+    static func get_subclass_object(_json_):
         var type = _json_['$type']
         match type:
         {{~ for child in bean.hierarchy_not_abstract_children~}}

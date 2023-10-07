@@ -58,7 +58,7 @@ public class UnderlyingDeserializeVisitor : ITypeFuncVisitor<string, string, str
     {
         if (type.DefBean.IsAbstractType)
         {
-            return $"{fieldName} = {GdscriptCommonTemplateExtension.FullName(type.DefBean)}.fromJson({jsonVarName})";
+            return $"{fieldName} = {GdscriptCommonTemplateExtension.FullName(type.DefBean)}.get_subclass_object({jsonVarName})";
         }
         else
         {
