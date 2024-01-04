@@ -45,8 +45,8 @@ public class DeclaringTypeNameVisitor : ITypeFuncVisitor<string>
 
     public virtual string Accept(TEnum type)
     {
-        // return GdscriptCommonTemplateExtension.FullName(type.DefEnum);
-        return "int";
+        return GdscriptCommonTemplateExtension.FullName(type.DefEnum);
+        // return "int";
     }
 
     public string Accept(TString type)
