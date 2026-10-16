@@ -133,8 +133,10 @@ public static class FileUtil
     }
 
     /// <summary>
-    /// Parse <c>{sheet}@{path}</c>. The sheet segment must not contain path separators,
-    /// so absolute paths that happen to include <c>@</c> (e.g. Jenkins <c>job@2</c>) are left intact.
+    /// Parse <c>{sheet}@{file}</c>, where <c>{sheet}</c> is the last path segment before <c>@</c>
+    /// (e.g. <c>data/tables@common.xlsx</c> -&gt; file <c>data/common.xlsx</c>, sheet <c>tables</c>).
+    /// A <c>@</c> followed by path separators (e.g. Jenkins <c>job@2/foo.xlsx</c>) is part of the
+    /// path, not a sheet separator, and is left intact.
     /// </summary>
     public static (string, string) SplitFileAndSheetName(string url)
     {
@@ -144,13 +146,16 @@ public static class FileUtil
             return (url, null);
         }
 
-        string sheet = url[..sheetSepIndex];
-        if (sheet.Contains('/') || sheet.Contains('\\'))
+        // 当 '@' 之后仍带路径分隔符时（如 Jenkins 工作区 job@2/foo.xlsx），它不是工作表分隔符。
+        string after = url[(sheetSepIndex + 1)..];
+        if (after.Contains('/') || after.Contains('\\'))
         {
             return (url, null);
         }
 
-        return (url[(sheetSepIndex + 1)..], sheet);
+        // 工作表名是 '@' 之前最后一段路径；文件名为“目录 + '@' 之后的部分”。
+        int lastPathSep = url.LastIndexOfAny(new[] { '/', '\\' }, sheetSepIndex - 1);
+        return (url[..(lastPathSep + 1)] + after, url[(lastPathSep + 1)..sheetSepIndex]);
     }
 
     public static async Task SaveFileAsync(string relateDir, string filePath, byte[] content)
