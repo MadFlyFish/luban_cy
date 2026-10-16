@@ -20,6 +20,7 @@
 
 using Luban.Defs;
 using Luban.RawDefs;
+using Luban.Schema;
 using Luban.Utils;
 using System.Text.RegularExpressions;
 
@@ -74,6 +75,7 @@ public class DefaultTableImporter : ITableImporter
             comment = comment != null && comment.Length >= 1 ? comment.TrimStart('-').Trim() : "";
             var table = new RawTable()
             {
+                Source = SchemaSource.Create(file),
                 Namespace = tableNamespace,
                 Name = tableName,
                 Index = "",
@@ -85,6 +87,7 @@ public class DefaultTableImporter : ITableImporter
                 InputFiles = new List<string> { relativePath },
                 OutputFile = "",
                 Tags = new Dictionary<string, string>(),
+                Variants = new List<string>(),
             };
             s_logger.Debug("import table file:{@}", table);
             tables.Add(table);

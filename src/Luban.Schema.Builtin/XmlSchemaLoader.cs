@@ -21,6 +21,7 @@
 using Luban.Defs;
 using Luban.Diagnostics;
 using Luban.RawDefs;
+using Luban.Schema;
 using Luban.Utils;
 using System.Xml.Linq;
 
@@ -101,6 +102,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         XmlSchemaUtil.ValidAttrKeys(_fileName, e, _enumOptionalAttrs, _enumRequiredAttrs);
         var en = new RawEnum()
         {
+            Source = SchemaSource.FromPath(_fileName),
             Name = XmlUtil.GetRequiredAttribute(e, "name").Trim(),
             Namespace = CurNamespace,
             Comment = XmlUtil.GetOptionalAttribute(e, "comment"),
@@ -144,7 +146,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         Collector.Add(en);
     }
 
-    private readonly List<string> _tableOptionalAttrs = new() { "index", "mode", "group", "comment", "readSchemaFromFile", "output", "tags" };
+    private readonly List<string> _tableOptionalAttrs = new() { "index", "mode", "group", "comment", "readSchemaFromFile", "output", "tags", "variant" };
     private readonly List<string> _tableRequireAttrs = new() { "name", "value", "input" };
 
     private void AddTable(XElement e)
@@ -165,7 +167,8 @@ public class XmlSchemaLoader : SchemaLoaderBase
         string mode = XmlUtil.GetOptionalAttribute(e, "mode");
         string tags = XmlUtil.GetOptionalAttribute(e, "tags");
         string output = XmlUtil.GetOptionalAttribute(e, "output");
-        Collector.Add(SchemaLoaderUtil.CreateTable(_fileName, name, module, valueType, index, mode, group, comment, defineFromFile, input, tags, output));
+        string variant = XmlUtil.GetOptionalAttribute(e, "variant");
+        Collector.Add(SchemaLoaderUtil.CreateTable(_fileName, name, module, valueType, index, mode, group, comment, defineFromFile, input, tags, output, variant));
     }
 
     private static readonly List<string> _fieldOptionalAttrs = new()
@@ -246,6 +249,7 @@ public class XmlSchemaLoader : SchemaLoaderBase
         TryGetUpdateParent(e, ref parent);
         var b = new RawBean()
         {
+            Source = SchemaSource.FromPath(_fileName),
             Name = XmlUtil.GetRequiredAttribute(e, "name"),
             Namespace = CurNamespace,
             Parent = parent,
